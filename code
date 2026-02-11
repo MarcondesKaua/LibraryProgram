@@ -16,10 +16,40 @@ struct Date {
 
 	}
 
-	
+	bool valid_date() {
+		try {
+
+		int d = std::stoi(day);
+		int m = std::stoi(month);
+		int y = std::stoi(year);
+
+		int days_in_months[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
+		if(y % 4 == 0 && y %100 != 0 || y %400 == 0) {
+			days_in_months[1] = 29;
+		}
+
+		if (m>= 1 && m <= 12) {
+			if (d <= days_in_months[m -1 ] && d >= 1) {
+				return true;
+			}
+		}
+
+
+		}
+		catch (...) {
+		return false;
+
+		}
+			
+		
+		return false;
+	};
 
 	void fill_date() {
 	std::string input_controller;
+
+
 	
 	while (true) {
 	std::cout << "Forneca sua data de nascimento (DD/MM/AAAA): ";
@@ -27,18 +57,17 @@ struct Date {
 
 	if (input_controller.length() >= 10 && input_controller[2] == '/' && input_controller[5] == '/') {
 	
-	day = input_controller.substr(0, 2);
-	month = input_controller.substr(3, 2);
-	year = input_controller.substr(6, 4);
-
-	break;
+		day = input_controller.substr(0, 2);
+		month = input_controller.substr(3, 2);
+		year = input_controller.substr(6, 4);
+	
+	if (valid_date()) {
+		break;
+	}
+	
 	} 
 	std::cout << "Formato invalido, tente novamente. (Ex: 01/01/2000)" << std::endl;
 	}
-	
-
-
-	
 
 	}
 
@@ -79,6 +108,13 @@ struct Student {
 		std::cout << "Nome: " << name << "\nRA: " << ra << "\nAno atual: " << current_year << "\nData de nascimento: " ;
 		birth_date.show_date();
 		std:: cout << "\n--------------------------------" << "\n \n";
+	}
+
+
+
+	void delete_student() {
+
+		
 	}
 };
 
