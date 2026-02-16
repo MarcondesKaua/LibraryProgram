@@ -112,10 +112,7 @@ struct Student {
 
 
 
-	void delete_student() {
-
-		
-	}
+	
 };
 
 
@@ -126,7 +123,11 @@ struct Book {
 	int year_published;
 	int quantity_in_shelf;
 
+	int id;
+
 	void fill_book() {
+
+
 		std::cout << "Digite o titulo do livro ";
 		std::getline(std::cin >> std::ws, title);
 
@@ -138,6 +139,10 @@ struct Book {
 
 		std::cout << "Digite quantos exemplares estao disponiveis ";
 		std::cin >> quantity_in_shelf;
+
+		static int id_count = 3;
+		this->id = id_count;
+		id_count++;
 	
 
 	}
@@ -145,7 +150,7 @@ struct Book {
 
 	void show_book() {
 		std:: cout << "--------------------------------\n";
-		std::cout << "Titulo: " << title << "\nAutor: " << author << "\nAno de publicacao: " << year_published << "\nQuantidade no acervo: " << quantity_in_shelf ;
+		std::cout << "Titulo: " << title << "\nAutor: " << author << "\nAno de publicacao: " << year_published << "\nQuantidade no acervo: " << quantity_in_shelf <<"\nID: " << this->id ;
 		std:: cout << "\n--------------------------------" << "\n \n";
 	
 	}
@@ -166,6 +171,38 @@ void fill_student_to_list(std::list <Student>& students_list) {
 	students_list.push_front(temp);
 }
 
+
+void delete_student(std::string ra_delete, std::list<Student>& students_list) {
+
+		for (auto i = students_list.begin(); i != students_list.end();) {
+
+			if (i -> ra == ra_delete) {
+				i = students_list.erase(i);
+			}
+			else {
+				i++;
+			}
+
+		}
+		
+	}
+
+void delete_book (int id_delete, std::list <Book>& book_list) {
+	
+
+	
+	for (auto i = book_list.begin(); i != book_list.end();) {
+		
+		if (i -> id == id_delete) {
+			i= book_list.erase(i);
+
+		} 
+		else {
+			i++;
+		}
+	}
+
+}
 
 /* void fill_student(std::list <Student>& students_list) {
 	
@@ -198,8 +235,8 @@ int main() {
 	
 	std::list <Book> book_list {
 
-		{"Senhor dos aneis", "J. R. R. Tolkien", 1949, 3 },
-		{"Tristan e Isolda", "Thomas da Bretanha", 1170, 2}
+		{"Senhor dos aneis", "J. R. R. Tolkien", 1949, 3, 1 },
+		{"Tristan e Isolda", "Thomas da Bretanha", 1170, 2, 2}
 
 	};
 	int menu_answer;
@@ -208,9 +245,11 @@ int main() {
 	<< "\n -----------------"
 	<< "\n 1 Inserir alunos"
 	<< "\n 2 Inserir livros"
-	<< "\n 3 Mostrar alunos"
-	<< "\n 4 Mostrar livros"
-	<< "\n 5 Sair do sistema \n" ;
+	<< "\n 3 Deletar alunos"
+	<< "\n 4 Deletar livros"
+	<< "\n 5 Mostrar alunos"
+	<< "\n 6 Mostrar livros"
+	<< "\n 7 Sair do sistema \n" ;
 
 	
 
@@ -223,12 +262,32 @@ int main() {
 			fill_student_to_list(students_list);
 		break;
 
+
 		case 2:
 			fill_book_to_list(book_list);
 		break;
 
-		case 3:
 
+		case 3: {
+			std::string temp_ra;
+			std::cout << "Qual o RA do aluno que você quer apagar :";
+			std::cin >> temp_ra;
+			
+
+			delete_student(temp_ra, students_list);
+		break;
+		}
+		
+		case 4: {
+			int id_delete;
+			std::cout << "Qual o ID do livro que voce quer apagar: ";
+			std::cin >> id_delete;
+			
+			delete_book(id_delete, book_list);
+		break;
+		}
+		case 5: 
+			
 			students_list.sort([](Student& n1, Student& n2){
 			std::string n1_string = n1.name;
 			std::string n2_string =n2.name;
@@ -248,10 +307,10 @@ int main() {
 			for (Student x : students_list) {
 			x.show_student();
 			}
+
 		break;
-
-		case 4:
-
+		
+		case 6:
 			book_list.sort([](Book& n1, Book& n2) {
 			std::string n1_string = n1.title;
 			std::string n2_string = n2.title;
@@ -271,10 +330,10 @@ int main() {
 			for (Book x : book_list) {
 				x.show_book();
 			}
+	
 		break;
 
-
-		case 5: 
+		case 7:
 			exit(0);
 
 		default: 
