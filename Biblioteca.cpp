@@ -150,7 +150,7 @@ struct Book {
 
 	void show_book() {
 		std:: cout << "--------------------------------\n";
-		std::cout << "Titulo: " << title << "\nAutor: " << author << "\nAno de publicacao: " << year_published << "\nQuantidade no acervo: " << quantity_in_shelf <<"\nID: " << this->id ;
+		std::cout << "Titulo: " << this->title << "\nAutor: " << this->author << "\nAno de publicacao: " << this->year_published << "\nQuantidade no acervo: " << this->quantity_in_shelf <<"\nID: " << this->id ;
 		std:: cout << "\n--------------------------------" << "\n \n";
 	
 	}
@@ -158,18 +158,175 @@ struct Book {
 
 };
 
+struct Loan {
+	//Book data
+	Book loaned_book;
+
+	//Student data
+	std::string ra;
+	
+
+};
+
+
+
+
+
+void fill_loan(std::list <Loan>& loan_list, std::list <Book>& book_list,  const std::list <Student> student_list) {
+	std::string ra;
+	int searching_id;
+	
+		std::cout << "Qual o RA do aluno ?";
+		std::cin >> ra;
+
+		bool real_student = false;
+		//perguntar pq o x precisa ser const
+		for (const Student& x : student_list) {
+			if (x.ra == ra ) {
+				real_student = true;
+				break;
+			} 
+		} 
+
+		if (!real_student) {
+			std::cout << "Aluno nao existe";
+			return;
+		}
+
+
+		std::cout << "Qual o id do livro emprestado ?";
+		std::cin >> searching_id;
+
+		for (auto i = book_list.begin(); i != book_list.end(); i++ ) {
+			//perguntar sobre essa setinha, achei estranho
+			if (i -> id == searching_id) {
+				
+				if( i -> quantity_in_shelf > 0) {
+
+					Loan temp_loan;
+					temp_loan.ra = ra;
+					temp_loan.loaned_book = *i;
+					loan_list.push_front(temp_loan);
+					
+					i-> quantity_in_shelf --;
+					return;
+
+				} else {
+
+					std::cout << "Nao ha mais exemplares para emprestar, livro esgotado do acervo";
+					return;
+				}
+				
+				
+				
+				
+				
+ 				
+				
+			}
+		}
+		std::cout <<"Algum erro catatrofe\n ";
+		
+
+};
+
+void delete_loan (std::list <Loan>& loan_list, std::list <Book>& book_list, const std::list<Student>& student_list) {
+
+	std::string searching_ra;
+	int searching_id;
+
+	std::cout << "Qual o RA do aluno que emprestou ?";
+	std::cin >> searching_ra;
+
+	bool real_student = false;
+		for (const Student& x : student_list) {
+			if (x.ra == searching_ra ) {
+				real_student = true;
+				break;
+			} 
+		} 
+
+		if (!real_student) {
+			std::cout << "Aluno nao existe\n";
+			return;
+		}
+
+	
+	std::cout << "Qual o ID do livro que esta sendo devolvido ?";
+	std::cin >> searching_id;
+
+	for (auto i = loan_list.begin(); i != loan_list.end(); i++) {
+
+		if (i -> ra == searching_ra && i-> loaned_book.id == searching_id) {
+
+			for (auto searching_book = book_list.begin(); searching_book != book_list.end(); searching_book++) {
+
+				if (searching_book -> id == searching_id) {
+					loan_list.erase(i);
+					searching_book -> quantity_in_shelf++;
+
+					return;
+				}
+				
+			}
+			
+		}
+	}
+	std::cout << "Emprestimo nao encontrado \n";
+}
+
+
+void show_loan(const std::list <Student>& student_list, const std::list <Loan>& loan_list) {
+	bool control = false;
+
+	std:: cout << "\n---------------EMPRESTIMOS-------------------\n";
+	std::cout << "";
+
+
+	for (const Loan& x : loan_list) {
+		std::cout << "Titulo: " << x.loaned_book.title << " Id: " << x.loaned_book.id << "\n";
+				
+			
+		for (const Student& y : student_list) {
+			if (y.ra == x.ra ) {
+				std::cout << "Nome: " << y.name << "\nAno atual: " << y.current_year << "\n RA: " << y.ra << "\n";
+				control = true;
+				break;
+				} 
+			} 
+
+			
+
+		}
+
+	if (!control) {
+		std::cout << "Nao ha emprestimos ativos \n";
+		return;
+
+	}
+	
+	
+
+			
+	std:: cout << "\n--------------------------------" << "\n \n";
+	
+	}
+
+
+
+
 void fill_book_to_list(std::list <Book>& book_list){
 	Book temp;
 	temp.fill_book();
 	book_list.push_front(temp);
 
-}
+};
 
 void fill_student_to_list(std::list <Student>& students_list) {
 	Student temp;
 	temp.fill_student();
 	students_list.push_front(temp);
-}
+};
 
 
 void delete_student(std::string ra_delete, std::list<Student>& students_list) {
@@ -185,7 +342,7 @@ void delete_student(std::string ra_delete, std::list<Student>& students_list) {
 
 		}
 		
-	}
+	};
 
 void delete_book (int id_delete, std::list <Book>& book_list) {
 	
@@ -202,7 +359,7 @@ void delete_book (int id_delete, std::list <Book>& book_list) {
 		}
 	}
 
-}
+};
 
 /* void fill_student(std::list <Student>& students_list) {
 	
@@ -229,7 +386,7 @@ int main() {
 	std::list <Student> students_list {
 
 		{"Kaua Marcondes dos Santos", "123456789", 3, {"06", "10", "2008"} },
-		{"Santos dos Marcondes Kaua", "98765431", 3, {"10", "06", "2008"} }
+		{"Santos dos Marcondes Kaua", "987654321", 3, {"10", "06", "2008"} }
 
 	};
 	
@@ -239,109 +396,99 @@ int main() {
 		{"Tristan e Isolda", "Thomas da Bretanha", 1170, 2, 2}
 
 	};
+
+	std::list <Loan> loan_list;
+
 	int menu_answer;
 
-	std::cout << "Menu de opcoes: " 
-	<< "\n -----------------"
-	<< "\n 1 Inserir alunos"
-	<< "\n 2 Inserir livros"
-	<< "\n 3 Deletar alunos"
-	<< "\n 4 Deletar livros"
-	<< "\n 5 Mostrar alunos"
-	<< "\n 6 Mostrar livros"
-	<< "\n 7 Sair do sistema \n" ;
-
-	
-
 	while (true) {
+        std::cout << "\nMenu de opcoes: " 
+                  << "\n-----------------"
+                  << "\n 1. Inserir aluno"
+                  << "\n 2. Inserir livro"
+                  << "\n 3. Deletar aluno"
+                  << "\n 4. Deletar livro"
+                  << "\n 5. Mostrar alunos"
+                  << "\n 6. Mostrar livros"
+                  << "\n 7. Realizar emprestimo"
+                  << "\n 8. Mostrar emprestimos ativos"
+                  << "\n 9. Devolver livro"
+                  << "\n 10. Sair"
+                  << "\n Escolha: ";
+        
+        std::cin >> menu_answer;    
 
-	std::cin >> menu_answer;	
+        switch (menu_answer){
+        case 1:
+            fill_student_to_list(students_list);
+            break;
 
-	switch (menu_answer){
-	case 1:
-			fill_student_to_list(students_list);
-		break;
+        case 2:
+            fill_book_to_list(book_list);
+            break;
 
+        case 3: {
+            std::string temp_ra;
+            std::cout << "Qual o RA do aluno que você quer apagar :";
+            std::cin >> temp_ra;
+            delete_student(temp_ra, students_list);
+            break;
+        }
+        
+        case 4: {
+            int id_delete;
+            std::cout << "Qual o ID do livro que voce quer apagar: ";
+            std::cin >> id_delete;
+            delete_book(id_delete, book_list);
+            break;
+        }
 
-		case 2:
-			fill_book_to_list(book_list);
-		break;
+        case 5: 
+            students_list.sort([](Student& n1, Student& n2){
+                std::string n1_string = n1.name;
+                std::string n2_string = n2.name;
+                for (char& x : n1_string) x = tolower(x);
+                for (char& x : n2_string) x = tolower(x);
+                return n1_string < n2_string;
+            });
+            for (Student& x : students_list) {
+                x.show_student();
+            }
+            break;
+        
+        case 6:
+            book_list.sort([](Book& n1, Book& n2) {
+                std::string n1_string = n1.title;
+                std::string n2_string = n2.title;
+                for (char& x : n1_string) x = tolower(x);
+                for (char& x : n2_string) x = tolower(x);
+                return n1_string < n2_string;
+            });
+            for (Book& x : book_list) {
+                x.show_book();
+            }
+            break;
 
+        case 7: 
+            fill_loan(loan_list, book_list, students_list);
+            break;
 
-		case 3: {
-			std::string temp_ra;
-			std::cout << "Qual o RA do aluno que você quer apagar :";
-			std::cin >> temp_ra;
-			
+        case 8:
+            show_loan(students_list, loan_list);
+            break;
 
-			delete_student(temp_ra, students_list);
-		break;
-		}
-		
-		case 4: {
-			int id_delete;
-			std::cout << "Qual o ID do livro que voce quer apagar: ";
-			std::cin >> id_delete;
-			
-			delete_book(id_delete, book_list);
-		break;
-		}
-		case 5: 
-			
-			students_list.sort([](Student& n1, Student& n2){
-			std::string n1_string = n1.name;
-			std::string n2_string =n2.name;
+        case 9:
+            delete_loan(loan_list, book_list, students_list);
+            break;
 
+        case 10:
+            exit(0);
 
-			for (char& x : n1_string) {
-			x = tolower(x);
-			}
-
-			for (char& x : n2_string) {
-			x = tolower(x);
-			}
-			return n1_string < n2_string;
-
-
-			});
-			for (Student x : students_list) {
-			x.show_student();
-			}
-
-		break;
-		
-		case 6:
-			book_list.sort([](Book& n1, Book& n2) {
-			std::string n1_string = n1.title;
-			std::string n2_string = n2.title;
-
-			for (char& x : n1_string) {
-				x = tolower(x);
-			}
-
-			for (char& x : n2_string) {
-				x = tolower(x);
-			}
-
-			return n1_string < n2_string;
-		});
-
-
-			for (Book x : book_list) {
-				x.show_book();
-			}
-	
-		break;
-
-		case 7:
-			exit(0);
-
-		default: 
-			std::cout << "Deu mole, ta digitando errado";
-			break;
-	}
-	}
-	
+        default: 
+            std::cout << "Deu mole, ta digitando errado";
+            break;
+        }
+    }
 	return 0;
 
 	}
